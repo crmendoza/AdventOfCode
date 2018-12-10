@@ -147,6 +147,24 @@ class Advent {
         return (firstStrategy: firstResult, secondStrategy: secondResult)
     }
     
+    static func fifthDay() {
+        let inputs = fetchDataSet("schedule")
+        let letters = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
+        let units = letters.map { $0+$0.uppercased() } + letters.map { $0.uppercased()+$0 }
+        if let polymer = inputs.first {
+            var polymer = polymer
+            var lastStringCount = -1
+            while polymer.count != lastStringCount {
+                lastStringCount = polymer.count
+                for str in units {
+                    polymer = polymer.replacingOccurrences(of: str, with: "")
+                }
+            }
+            print(polymer)
+            print(polymer.count)
+        }
+    }
+    
     private static func getGuardId(_ input: String) -> String {
         let guardRegex = try? NSRegularExpression(pattern: "#[0-9]+", options: .caseInsensitive)
         let string = input as NSString
