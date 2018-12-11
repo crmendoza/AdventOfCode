@@ -1,12 +1,12 @@
 import Foundation
 
-class Advent {
+public class Advent {
     
-    static func firstDayApplyFrequencies() -> Int {
+    public static func firstDayApplyFrequencies() -> Int {
         return fetchDataSet("filename").compactMap { Int($0) }.reduce(0, +)
     }
     
-    static func firstDayDuplicateFrequency() -> Int {
+    public static func firstDayDuplicateFrequency() -> Int {
         var resultingFrequencies: Set = [0]
         var currentValue: Int = 0
         var duplicateValue: Int!
@@ -25,7 +25,7 @@ class Advent {
         return duplicateValue
     }
     
-    static func secondDayHashCode() -> Int {
+    public static func secondDayHashCode() -> Int {
         let codes: [String] = fetchDataSet("codes")
         
         var match2LetterRule: Int = 0
@@ -49,7 +49,7 @@ class Advent {
         return match2LetterRule * match3LetterRule
     }
     
-    static func secondDayCommonBoxCode() -> String {
+    public static func secondDayCommonBoxCode() -> String {
         let codes: [String] = fetchDataSet("codes")
         
         for i in 0..<codes.count {
@@ -66,7 +66,7 @@ class Advent {
         return ""
     }
     
-    static func thirdDayFabricArea() -> Int {
+    public static func thirdDayFabricArea() -> Int {
         let claims = fetchDataSet("pattern").compactMap { $0.components(separatedBy: CharacterSet(charactersIn: "#@:,x ")).filter { !$0.isEmpty }.compactMap { Int($0) } }
         var fabric = Array(repeating: Array(repeating: 0, count: 1000), count: 1000)
         for square in claims {
@@ -80,7 +80,7 @@ class Advent {
         return fabric.joined().filter { $0 > 1}.count
     }
     
-    static func thirdDayFabricNoOverlap() -> Int {
+    public static func thirdDayFabricNoOverlap() -> Int {
         let claims = fetchDataSet("pattern").compactMap { $0.components(separatedBy: CharacterSet(charactersIn: "#@:,x ")).filter { !$0.isEmpty }.compactMap { Int($0) } }
         var ids = Set(claims.compactMap { $0[0] })
         
@@ -103,7 +103,7 @@ class Advent {
         return ids.first ?? 0
     }
     
-    static func fourthDay() -> (firstStrategy: Int, secondStrategy: Int) {
+    public static func fourthDay() -> (firstStrategy: Int, secondStrategy: Int) {
         let inputs = fetchDataSet("schedule").sorted()
         
         var schedules: [String: [Int]] = [:]
@@ -147,22 +147,47 @@ class Advent {
         return (firstStrategy: firstResult, secondStrategy: secondResult)
     }
     
-    static func fifthDay() {
-        let inputs = fetchDataSet("schedule")
+    public static func fifthDayFirst() -> Int {
+        let inputs = fetchDataSet("polymer")
         let letters = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
         let units = letters.map { $0+$0.uppercased() } + letters.map { $0.uppercased()+$0 }
         if let polymer = inputs.first {
-            var polymer = polymer
-            var lastStringCount = -1
-            while polymer.count != lastStringCount {
-                lastStringCount = polymer.count
-                for str in units {
-                    polymer = polymer.replacingOccurrences(of: str, with: "")
-                }
-            }
-            print(polymer)
-            print(polymer.count)
+            return react(polymer: polymer, units: units)
         }
+        
+        return 0
+    }
+    
+    public static func fifthDaySecond() -> Int {
+        let inputs = fetchDataSet("polymer")
+        
+        if let polymer = inputs.first {
+            let letters = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
+            var resultingLength: [Int] = []
+            
+            for letter in letters {
+                let subArray = letters.filter { $0 != letter }
+                let units: [String] = subArray.map { $0+$0.uppercased() } + subArray.map { $0.uppercased()+$0 }
+                let modifiedPolymer = polymer.replacingOccurrences(of: letter, with: "").replacingOccurrences(of: letter.uppercased(), with: "")
+                resultingLength.append(react(polymer: modifiedPolymer, units: units))
+            }
+            
+            return resultingLength.min() ?? -1
+        }
+        
+        return -1
+    }
+    
+    private static func react(polymer: String, units: [String]) -> Int {
+        var polymer = polymer
+        var lastStringCount = -1
+        while polymer.count != lastStringCount {
+            lastStringCount = polymer.count
+            for str in units {
+                polymer = polymer.replacingOccurrences(of: str, with: "")
+            }
+        }
+        return polymer.count
     }
     
     private static func getGuardId(_ input: String) -> String {
