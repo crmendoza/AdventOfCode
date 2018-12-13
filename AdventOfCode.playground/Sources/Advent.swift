@@ -178,6 +178,77 @@ public class Advent {
         return -1
     }
     
+    fileprivate struct Point {
+        let name: String
+        let x: Int
+        let y: Int
+        
+        func manhattanDistance(_ x: Int, _ y: Int) -> Int {
+            return abs(self.x - x) + abs(self.y - y)
+        }
+    }
+    
+    fileprivate struct Node {
+        var name: String
+        var weight: Int
+    }
+    
+    public static func sixthDayFirst() {
+        let inputs = fetchDataSet("points")
+        
+        let letters = "Q,W,E,R,T,Y,U,I,O,P,A,S,D,F,G,H,J,K,L,Z,X,C,V,B,N,M,QQ,WW,EE,RR,TT,YY,UU,II,OO,PP,AA,SS,DD,FF,GG,HH,JJ,KK,LL,ZZ,XX,CC,VV,BB,NN,MM".components(separatedBy: ",")
+        
+        let points = zip(letters, inputs).compactMap { (letter, point) -> Point? in
+            let elements = point.components(separatedBy: ", ")
+            if let _ = elements.first, let first = Int(elements.first!), let _ = elements.last, let last = Int(elements.last!) {
+                return Point(name: letter, x: first, y: last)
+            }
+            
+            return nil
+        }
+        
+        let minX = points.min { point1, point2 -> Bool in
+            return point1.x < point2.x
+            }?.x ?? 0
+        let maxX = points.max { point1, point2 -> Bool in
+            return point1.x < point2.x
+            }?.x ?? 0
+        let minY = points.min { point1, point2 -> Bool in
+            return point1.y < point2.y
+            }?.y ?? 0
+        let maxY = points.max { point1, point2 -> Bool in
+            return point1.y < point2.y
+            }?.y ?? 0
+        
+        let yLimit = maxY-minY
+        let xLimit = maxX-minX
+        
+        var map: [[Node]] = Array(repeating: Array(repeating: Node(name: "_", weight: 0), count: xLimit), count: yLimit)
+//        let increment = 1
+        
+        for point in points {
+            var currentNode = map[point.x - minX][point.y - minY]
+            currentNode.name = point.name
+        }
+        
+        print(map)
+        
+//        for y in 0..<yLimit {
+//            for x in 0..<xLimit {
+//                map[y][x] = points.min { (pointA, pointB) -> Bool in
+//                    return pointA.manhattanDistance(x+minX, y+minY) < pointB.manhattanDistance(x+minX, y+minY)
+//                    }?.name.lowercased() ?? "_"
+//            }
+//        }
+//
+//        var counts: [String: Int] = [:]
+//        map.flatMap { $0 }.forEach { counts[$0] = (counts[$0] ?? 0) + 1 }
+    }
+    
+    private func manhattanDistance(x1: Int, y1: Int, x2: Int, y2: Int) -> Int {
+        return abs(x1-x2) + abs(y2-y1)
+    }
+    
     private static func react(polymer: String, units: [String]) -> Int {
         var polymer = polymer
         var lastStringCount = -1
